@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/app/config/firebase.config';
 import { serverTimestamp } from 'firebase/firestore';
+import { X } from 'lucide-react';
 
 interface RegisterFormProps {
 	onSwitchToLogin: (email?: string) => void;
@@ -18,6 +19,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 	const [showExistingUserModal, setShowExistingUserModal] = useState(false);
 	const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 	const [passwordError, setPasswordError] = useState('');
+	const [isEmailValid, setIsEmailValid] = useState(true);
+	const [isPasswordMatch, setIsPasswordMatch] = useState(true);
+	const [emailExists, setEmailExists] = useState(false);
 
 	const validatePassword = (password: string) => {
 		if (password.length < 6) {
@@ -35,7 +39,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 
 	const checkExistingUser = async (email: string) => {
 		const usersRef = collection(db, 'users');
-		const q = query(usersRef, where("email", "==", email));
+		const q = query(usersRef, where('email', '==', email));
 		const querySnapshot = await getDocs(q);
 		return !querySnapshot.empty;
 	};
@@ -45,6 +49,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 			setIsCheckingEmail(true);
 			const exists = await checkExistingUser(email);
 			setIsCheckingEmail(false);
+			setEmailExists(exists);
 			if (exists) {
 				setShowExistingUserModal(true);
 			}
@@ -98,22 +103,36 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 		}
 	};
 
+	// Zmodyfikowana walidacja e-maila
+	useEffect(() => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		setIsEmailValid(email === '' || emailRegex.test(email));
+	}, [email]);
+
+	// Zmodyfikowana walidacja zgodności haseł
+	useEffect(() => {
+		setIsPasswordMatch(confirmPassword === '' || password === confirmPassword);
+	}, [password, confirmPassword]);
+
 	const ExistingUserModal = () => (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-			<div className="bg-white p-6 rounded-lg shadow-xl">
+			<div className="bg-white p-6 rounded-lg shadow-xl relative">
+				<button
+					onClick={() => setShowExistingUserModal(false)}
+					className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+					aria-label="Zamknij"
+				>
+					<X size={24} />
+				</button>
 				<h3 className="text-lg font-bold mb-4">Użytkownik już istnieje</h3>
 				<p className="mb-4">
 					Użytkownik o podanym adresie email już istnieje. Czy chcesz się zalogować?
 				</p>
-				<div className="flex justify-end space-x-2">
-					<button
-						className="btn btn-outline"
-						onClick={() => setShowExistingUserModal(false)}>
-						Anuluj
-					</button>
+				<div className="flex justify-end">
 					<button
 						className="btn btn-primary"
-						onClick={() => onSwitchToLogin(email)}>
+						onClick={() => onSwitchToLogin(email)}
+					>
 						Przejdź do logowania
 					</button>
 				</div>
@@ -134,69 +153,87 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
 						onSubmit={handleSubmit}
 						className="space-y-4">
 						<div className="form-control">
-						<label
-							className="label"
-							htmlFor="email">
-							<span className="label-text">Email</span>
-						</label>
-						<input
-							type="email"
-							id="email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							onBlur={handleEmailBlur}
-							required
-							className={`input input-bordered w-full ${isCheckingEmail ? 'input-disabled' : ''}`}
-						/>
-						{isCheckingEmail && <span className="loading loading-spinner loading-xs mt-2"></span>}
-					</div>
-					<div className="form-control">
-						<label
-							className="label"
-							htmlFor="password">
-							<span className="label-text">Hasło</span>
-						</label>
-						<input
-							type="password"
-							id="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-							className="input input-bordered w-full"
-						/>
-						{passwordError && <p className="text-error text-sm mt-1">{passwordError}</p>}
-					</div>
-					<div className="form-control">
-						<label
-							className="label"
-							htmlFor="confirmPassword">
-							<span className="label-text">Potwierdź hasło</span>
-						</label>
-						<input
-							type="password"
-							id="confirmPassword"
-							value={confirmPassword}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							required
-							className="input input-bordered w-full"
-						/>
-					</div>
-					{error && <p className="text-error text-sm">{error}</p>}
-					<div className="form-control mt-6">
-						<button
-							type="submit"
-							className="btn btn-primary"
-							disabled={isLoading || isCheckingEmail || !!passwordError}>
-							{isLoading ? (
-								<>
-									<span className="loading loading-spinner"></span>
-									Rejestracja...
-								</>
-							) : (
-								'Zarejestruj się'
+							<label
+								className="label"
+								htmlFor="email">
+								<span className="label-text">Email</span>
+							</label>
+							<input
+								type="email"
+								id="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								onBlur={handleEmailBlur}
+								required
+								className={`input input-bordered w-full ${isCheckingEmail ? 'input-disabled' : ''} ${!isEmailValid && email !== '' ? 'input-error' : ''}`}
+							/>
+							{isCheckingEmail && <span className="loading loading-spinner loading-xs mt-2"></span>}
+							{!isEmailValid && email !== '' && (
+								<p className="text-error text-sm mt-1">Nieprawidłowy adres e-mail</p>
 							)}
-						</button>
-					</div>
+						</div>
+						<div className="form-control">
+							<label
+								className="label"
+								htmlFor="password">
+								<span className="label-text">Hasło</span>
+							</label>
+							<input
+								type="password"
+								id="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+								className="input input-bordered w-full"
+							/>
+							{passwordError && password !== '' && (
+								<p className="text-error text-sm mt-1">{passwordError}</p>
+							)}
+						</div>
+						<div className="form-control">
+							<label
+								className="label"
+								htmlFor="confirmPassword">
+								<span className="label-text">Potwierdź hasło</span>
+							</label>
+							<input
+								type="password"
+								id="confirmPassword"
+								value={confirmPassword}
+								onChange={(e) => setConfirmPassword(e.target.value)}
+								required
+								className={`input input-bordered w-full ${!isPasswordMatch && confirmPassword !== '' ? 'input-error' : ''}`}
+							/>
+							{!isPasswordMatch && confirmPassword !== '' && (
+								<p className="text-error text-sm mt-1">Hasła nie są zgodne</p>
+							)}
+						</div>
+						{error && <p className="text-error text-sm">{error}</p>}
+						<div className="form-control mt-6">
+							<button
+								type="submit"
+								className="btn btn-primary"
+								disabled={
+									isLoading ||
+									isCheckingEmail ||
+									!!passwordError ||
+									!isEmailValid ||
+									!isPasswordMatch ||
+									!email ||
+									!password ||
+									!confirmPassword ||
+									emailExists
+								}>
+								{isLoading ? (
+									<>
+										<span className="loading loading-spinner"></span>
+										Rejestracja...
+									</>
+								) : (
+									'Zarejestruj się'
+								)}
+							</button>
+						</div>
 					</form>
 					<div className="text-center mt-4">
 						<p>Masz już konto?</p>
