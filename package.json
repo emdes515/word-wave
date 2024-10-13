@@ -33,6 +33,7 @@
 	"dependencies": {
 		"appwrite": "^16.0.2",
 		"base": "^3.0.0",
+		"node-appwrite": "^14.1.0",
 		"tailwindcss-motion": "^0.3.0-beta"
 	}
 }

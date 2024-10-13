@@ -5,8 +5,6 @@
 	import { onMount } from 'svelte';
 
 	let isLogin = true;
-
-
 </script>
 
 <div class="flex h-screen w-screen items-center justify-center">
