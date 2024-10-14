@@ -5,3 +5,7 @@ export function getUsersEmailList(usersList) {
 export function checkUserExistenceByEmail(usersList, email) {
 	return usersList.users.some((user) => user.email === email);
 }
+
+export function checkUserExistenceByName(usersList, name) {
+	return usersList.users.some((user) => user.name === name);
+}
