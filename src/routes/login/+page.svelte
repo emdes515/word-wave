@@ -1,8 +1,6 @@
 <script>
-	import Login from '../../components/login.svelte';
-	import Register from '../../components/register.svelte';
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import Login from '../../components/login/login.svelte';
+	import Register from '../../components/login/register.svelte';
 
 	let isLogin = true;
 </script>

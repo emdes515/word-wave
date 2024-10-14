@@ -5,7 +5,7 @@ export default {
 		'./src/app.html',
 		'./src/components/**/*.{svelte,js,ts}'
 	],
-	plugins: [require('daisyui'), require('tailwindcss-motion')],
+	plugins: [require('daisyui'), require('tailwindcss-motion'), require('tailwindcss-animate')],
 	daisyui: {
 		themes: ['light', 'dark', 'cupcake']
 	}

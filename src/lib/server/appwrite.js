@@ -1,4 +1,4 @@
-import { Client, Account } from 'node-appwrite';
+import { Client, Account, Users } from 'node-appwrite';
 
 export const SESSION_COOKIE = 'my-custom-session';
 
@@ -12,6 +12,9 @@ export function createAdminClient() {
 	return {
 		get account() {
 			return new Account(client);
+		},
+		get users() {
+			return new Users(client);
 		}
 	};
 }
