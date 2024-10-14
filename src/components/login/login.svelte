@@ -3,8 +3,7 @@
 	import { slide } from 'svelte/transition';
 	export let isLogin;
 
-	let email = '';
-	let password = '';
+	let email, password;
 
 	const checkEmailValidity = () => {
 		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -14,7 +13,10 @@
 	};
 
 	const checkPasswordValidity = () => {
-		isPasswordValid = password.length !== 0;
+		const isPasswordNotEmpty = password.length !== 0;
+		isPasswordValid = isPasswordNotEmpty;
+
+		return isPasswordNotEmpty;
 	};
 
 	let isEmailValid = true;
@@ -22,14 +24,15 @@
 
 	const inputInvalidClass = 'ring-2 ring-red-500';
 
-	const animationClass =
-		'tailwindcss-animate animate-in slide-in-from-left animate-out animate-out-to-right';
-
-	const handleLogin = async (event) => {};
+	const handleLogin = async (event) => {
+		if (!checkEmailValidity() || !checkPasswordValidity()) {
+			event.preventDefault();
+		}
+	};
 </script>
 
 <div
-	class={`animate-in fade-in card m-5 max-h-auto w-full bg-base-200 shadow-2xl duration-500 sm:w-96 p-5`}
+	class={`animate-in fade-in max-h-auto card m-5 w-full bg-base-200 p-5 shadow-2xl duration-500 sm:w-96`}
 >
 	<form
 		action="?/login"
@@ -40,15 +43,15 @@
 	>
 		<div class="flex w-full flex-col items-center">
 			{#if !isEmailValid}
-				<p in:slide out:slide out class=" my-2 font-bold text-red-500">Niepoprawny email</p>
+				<p in:slide out:slide out class="mb-2 font-bold text-red-500 self-start">Niepoprawny email</p>
 			{/if}
 			<div
-				class={`input input-bordered relative flex w-full items-center gap-2${isEmailValid ? '' : inputInvalidClass}`}
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isEmailValid ? '' : inputInvalidClass}`}
 			>
 				<Icon icon="ic:baseline-email" class="text-2xl" />
 				<input
 					bind:value={email}
-					on:change={checkEmailValidity}
+					on:input={checkEmailValidity}
 					id="email"
 					s
 					name="email"
@@ -61,13 +64,15 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if !isPasswordValid}
-				<p in:slide out:slide class=" my-2 font-bold text-red-500">Hasło nie może być puste</p>
+				<p in:slide out:slide class=" mb-2 font-bold text-red-500 self-start">Hasło nie może być puste</p>
 			{/if}
-			<div class="input input-bordered flex w-full items-center gap-2">
+			<div
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isPasswordValid ? '' : inputInvalidClass}`}
+			>
 				<Icon icon="ic:baseline-lock" class="text-2xl" />
 				<input
 					bind:value={password}
-					on:change={checkPasswordValidity}
+					on:input={checkPasswordValidity}
 					id="password"
 					name="password"
 					type="password"

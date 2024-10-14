@@ -1,19 +1,68 @@
 <script>
 	import Icon from '@iconify/svelte';
+	import { slide } from 'svelte/transition';
 
 	export let isLogin;
+
+	let email = '';
+	let password = '';
+	let username = '';
+
+	const checkEmailValidity = () => {
+		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+		isEmailValid = emailRegex.test(email);
+
+		return emailRegex.test(email);
+	};
+
+	const checkPasswordValidity = () => {
+		const isPasswordLongerThen8 = password.length > 8;
+		isPasswordValid = isPasswordLongerThen8;
+
+		return isPasswordLongerThen8;
+	};
+
+	const checkUsernameValidity = () => {
+		const isUsernameNotEmpty = username.length !== 0;
+
+		isUsernameValid = isUsernameNotEmpty;
+
+		return isUsernameNotEmpty;
+	};
+
+	let isEmailValid = true;
+	let isPasswordValid = true;
+	let isUsernameValid = true;
+
+	const handleRegister = (event) => {
+		if (!checkEmailValidity() || !checkPasswordValidity() || !checkUsernameValidity()) {
+			event.preventDefault();
+		}
+	};
+
+	const inputInvalidClass = 'ring-2 ring-red-500';
 </script>
 
 <div class="animate-in fade-in card m-5 my-5 w-full bg-base-200 shadow-2xl duration-500 sm:w-96">
 	<form
 		action="?/register"
 		method="POST"
+		on:submit={handleRegister}
 		class="flex h-full flex-col items-center justify-center gap-4 p-4"
 	>
 		<div class="flex w-full flex-col items-center">
-			<div class="input input-bordered flex w-full items-center gap-2">
+			{#if !isUsernameValid}
+				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">
+					Nazwa użytkownika nie może być pusta
+				</p>
+			{/if}
+			<div
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isUsernameValid ? '' : inputInvalidClass}`}
+			>
 				<Icon icon="ic:baseline-account-circle" class="text-2xl" />
 				<input
+					bind:value={username}
+					on:input={checkUsernameValidity}
 					type="text"
 					class="grow"
 					placeholder="Nazwa użytkownika"
@@ -23,19 +72,47 @@
 			</div>
 		</div>
 		<div class="flex w-full flex-col items-center">
-			<div class="input input-bordered flex w-full items-center gap-2">
+			{#if !isEmailValid}
+				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">Niepoprawny email</p>
+			{/if}
+			<div
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isEmailValid ? '' : inputInvalidClass}`}
+			>
 				<Icon icon="ic:baseline-email" class="text-2xl" />
-				<input type="text" class="grow" placeholder="Email" id="email" name="email" />
+				<input
+					type="text"
+					class="grow"
+					placeholder="Email"
+					id="email"
+					name="email"
+					bind:value={email}
+					on:input={checkEmailValidity}
+				/>
 			</div>
 		</div>
 
 		<div class="flex w-full flex-col items-center">
-			<div class="input input-bordered flex w-full items-center gap-2">
+			{#if !isPasswordValid}
+				<p in:slide out:slide class="mb-2 font-bold text-red-500 self-start">
+					Hasło musi zawierać conajmiej 8 znaków
+				</p>
+			{/if}
+			<div
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isPasswordValid ? '' : inputInvalidClass}`}
+			>
 				<Icon icon="ic:baseline-lock" class="text-2xl" />
-				<input type="text" class="grow" placeholder="Hasło" id="password" name="password" />
+				<input
+					type="text"
+					class="grow"
+					placeholder="Hasło"
+					id="password"
+					name="password"
+					bind:value={password}
+					on:input={checkPasswordValidity}
+				/>
 			</div>
 		</div>
-	
+
 		<div class="flex w-full flex-col items-center">
 			<div class="input input-bordered flex w-full items-center gap-2">
 				<Icon icon="ic:baseline-check" class="text-2xl" />
