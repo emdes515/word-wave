@@ -43,7 +43,9 @@
 	>
 		<div class="flex w-full flex-col items-center">
 			{#if !isEmailValid}
-				<p in:slide out:slide out class="mb-2 font-bold text-red-500 self-start">Niepoprawny email</p>
+				<p in:slide out:slide out class="mb-2 self-start font-bold text-red-500">
+					Niepoprawny email
+				</p>
 			{/if}
 			<div
 				class={`input input-bordered relative flex w-full items-center gap-2 ${isEmailValid ? '' : inputInvalidClass}`}
@@ -64,7 +66,9 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if !isPasswordValid}
-				<p in:slide out:slide class=" mb-2 font-bold text-red-500 self-start">Hasło nie może być puste</p>
+				<p in:slide out:slide class=" mb-2 self-start font-bold text-red-500">
+					Hasło nie może być puste
+				</p>
 			{/if}
 			<div
 				class={`input input-bordered relative flex w-full items-center gap-2 ${isPasswordValid ? '' : inputInvalidClass}`}

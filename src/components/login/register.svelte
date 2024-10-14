@@ -4,9 +4,7 @@
 
 	export let isLogin;
 
-	let email = '';
-	let password = '';
-	let username = '';
+	let email, password, username, confirmPassword;
 
 	const checkEmailValidity = () => {
 		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -16,7 +14,7 @@
 	};
 
 	const checkPasswordValidity = () => {
-		const isPasswordLongerThen8 = password.length > 8;
+		const isPasswordLongerThen8 = password.length >= 8;
 		isPasswordValid = isPasswordLongerThen8;
 
 		return isPasswordLongerThen8;
@@ -30,9 +28,17 @@
 		return isUsernameNotEmpty;
 	};
 
+	const checkConfirmPasswordValidity = () => {
+		const isPasswordMatch = password === confirmPassword;
+		isConfirmPasswordMatch = isPasswordMatch;
+
+		return isPasswordMatch;
+	};
+
 	let isEmailValid = true;
 	let isPasswordValid = true;
 	let isUsernameValid = true;
+	let isConfirmPasswordMatch = true;
 
 	const handleRegister = (event) => {
 		if (!checkEmailValidity() || !checkPasswordValidity() || !checkUsernameValidity()) {
@@ -93,7 +99,7 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if !isPasswordValid}
-				<p in:slide out:slide class="mb-2 font-bold text-red-500 self-start">
+				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">
 					Hasło musi zawierać conajmiej 8 znaków
 				</p>
 			{/if}
@@ -102,26 +108,38 @@
 			>
 				<Icon icon="ic:baseline-lock" class="text-2xl" />
 				<input
-					type="text"
+					type="password"
 					class="grow"
 					placeholder="Hasło"
 					id="password"
 					name="password"
 					bind:value={password}
-					on:input={checkPasswordValidity}
+					on:input={() => {
+						checkPasswordValidity();
+						checkConfirmPasswordValidity();
+					}}
 				/>
 			</div>
 		</div>
 
 		<div class="flex w-full flex-col items-center">
-			<div class="input input-bordered flex w-full items-center gap-2">
+			{#if isPasswordValid === true && !isConfirmPasswordMatch}
+				<p in:slide out:slide class="mb-2 self-start self-start font-bold text-red-500">
+					Hasła nie są takie same
+				</p>
+			{/if}
+			<div
+				class={`input input-bordered relative flex w-full items-center gap-2 ${isPasswordValid === true && !isConfirmPasswordMatch ? inputInvalidClass : ''}`}
+			>
 				<Icon icon="ic:baseline-check" class="text-2xl" />
 				<input
-					type="text"
+					type="password"
 					class="grow"
 					placeholder="Powtórz hasło"
 					id="confirm-password"
 					name="confirm-password"
+					bind:value={confirmPassword}
+					on:input={checkConfirmPasswordValidity}
 				/>
 			</div>
 		</div>
