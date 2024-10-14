@@ -61,7 +61,7 @@
 	>
 		<div class="flex w-full flex-col items-center">
 			{#if !isUsernameValid}
-				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">
+				<p in:slide out:slide class="mb-2 self-start text-xs font-bold text-red-500">
 					Nazwa użytkownika nie może być pusta
 				</p>
 			{/if}
@@ -82,7 +82,9 @@
 		</div>
 		<div class="flex w-full flex-col items-center">
 			{#if !isEmailValid}
-				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">Niepoprawny email</p>
+				<p in:slide out:slide class="mb-2 self-start text-xs font-bold text-red-500">
+					Niepoprawny email
+				</p>
 			{/if}
 			<div
 				class={`input input-bordered relative flex w-full items-center gap-2 ${isEmailValid ? '' : inputInvalidClass}`}
@@ -102,7 +104,7 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if !isPasswordValid}
-				<p in:slide out:slide class="mb-2 self-start font-bold text-red-500">
+				<p in:slide out:slide class="mb-2 self-start text-xs font-bold text-red-500">
 					Hasło musi zawierać conajmiej 8 znaków
 				</p>
 			{/if}
@@ -127,7 +129,7 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if isPasswordValid === true && !isConfirmPasswordMatch}
-				<p in:slide out:slide class="mb-2 self-start self-start font-bold text-red-500">
+				<p in:slide out:slide class="mb-2 self-start self-start text-xs font-bold text-red-500">
 					Hasła nie są takie same
 				</p>
 			{/if}

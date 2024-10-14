@@ -1,9 +1,11 @@
 <script>
 	import Icon from '@iconify/svelte';
+	import { toast } from 'svelte-sonner';
 	import { slide } from 'svelte/transition';
 	export let isLogin;
 
-	let email, password;
+	let email = '';
+	let password = '';
 
 	let isLoading = false;
 
@@ -15,10 +17,10 @@
 	};
 
 	const checkPasswordValidity = () => {
-		const isPasswordNotEmpty = password.length !== 0;
-		isPasswordValid = isPasswordNotEmpty;
+		const isPasswordLongerThen8 = password.length >= 8;
+		isPasswordValid = isPasswordLongerThen8;
 
-		return isPasswordNotEmpty;
+		return isPasswordLongerThen8;
 	};
 
 	let isEmailValid = true;
@@ -27,9 +29,21 @@
 	const inputInvalidClass = 'ring-2 ring-red-500';
 
 	const handleLogin = async (event) => {
-		isLoading = true;
-		if (!checkEmailValidity() || !checkPasswordValidity()) {
+		checkEmailValidity();
+		checkPasswordValidity();
+
+		if (!isEmailValid) {
 			event.preventDefault();
+			toast.error('Niepoprawny email');
+		}
+
+		if (!isPasswordValid) {
+			event.preventDefault();
+			toast.error('Hasło nie może być puste');
+		}
+
+		if (isEmailValid || isPasswordValid) {
+			isLoading = true;
 		}
 	};
 </script>
@@ -46,7 +60,7 @@
 	>
 		<div class="flex w-full flex-col items-center">
 			{#if !isEmailValid}
-				<p in:slide out:slide out class="mb-2 self-start font-bold text-red-500">
+				<p in:slide out:slide out class="mb-2 self-start text-xs font-bold text-red-500">
 					Niepoprawny email
 				</p>
 			{/if}
@@ -69,8 +83,8 @@
 
 		<div class="flex w-full flex-col items-center">
 			{#if !isPasswordValid}
-				<p in:slide out:slide class=" mb-2 self-start font-bold text-red-500">
-					Hasło nie może być puste
+				<p in:slide out:slide class=" mb-2 self-start text-xs font-bold text-red-500">
+					Hasło musi zawierać co najmniej 8 znaków
 				</p>
 			{/if}
 			<div
