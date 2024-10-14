@@ -5,6 +5,8 @@
 
 	let email, password;
 
+	let isLoading = false;
+
 	const checkEmailValidity = () => {
 		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 		isEmailValid = emailRegex.test(email);
@@ -25,6 +27,7 @@
 	const inputInvalidClass = 'ring-2 ring-red-500';
 
 	const handleLogin = async (event) => {
+		isLoading = true;
 		if (!checkEmailValidity() || !checkPasswordValidity()) {
 			event.preventDefault();
 		}
@@ -85,7 +88,15 @@
 				/>
 			</div>
 		</div>
-		<input type="submit" class="btn btn-primary w-full" value="Zaloguj się" />
+
+		<div class="btn btn-primary w-full">
+			{#if isLoading}
+				<span class="loading loading-spinner loading-sm"></span>
+			{:else}
+				<input type="submit" class="w-full" value="Zaloguj się" />
+			{/if}
+		</div>
+
 		<button
 			on:click={() => (isLogin = !isLogin)}
 			class="text-1xl text-center font-bold text-primary underline underline-offset-1"

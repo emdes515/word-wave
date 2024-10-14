@@ -6,6 +6,8 @@
 
 	let email, password, username, confirmPassword;
 
+	let isLoading = false;
+
 	const checkEmailValidity = () => {
 		const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 		isEmailValid = emailRegex.test(email);
@@ -41,6 +43,7 @@
 	let isConfirmPasswordMatch = true;
 
 	const handleRegister = (event) => {
+		isLoading = true;
 		if (!checkEmailValidity() || !checkPasswordValidity() || !checkUsernameValidity()) {
 			event.preventDefault();
 		}
@@ -144,7 +147,14 @@
 			</div>
 		</div>
 
-		<button class="btn btn-primary w-full">Stwórz konto</button>
+		<div class="btn btn-primary w-full">
+			{#if isLoading}
+				<span class="loading loading-spinner loading-sm"></span>
+			{:else}
+				<input type="submit" class="w-full" value="Stwórz konto" />
+			{/if}
+		</div>
+
 		<button
 			on:click={() => (isLogin = !isLogin)}
 			class="text-1xl text-center font-bold text-primary underline underline-offset-1"
